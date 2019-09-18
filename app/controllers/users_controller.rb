@@ -1,10 +1,20 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user!
 
   # GET /users
   # GET /users.json
   def index
     @users = User.all
+  end
+
+  def search
+    users = User.search_coincidence(params[:word])
+    if users.any?
+      render json: { data_found: render_to_string(template: "users/template", layout: false, locals: {users: users}) }
+    else
+      render json: { data_found: "" }
+    end
   end
 
   # GET /users/1
